@@ -20,9 +20,12 @@ verse 0 =
     \now we're drunk and passed out!\n"
 
 verse curr =
-    form curr ++ " of beer on the wall, " ++
-    form curr ++ " of beer.\nTake one down, pass it around, " ++
-    form next ++ " of beer on the wall...\n" ++ verse next
+    concat
+        [ form curr, " of beer on the wall, "
+        , form curr, " of beer.\nTake one down, pass it around, "
+        , form next, " of beer on the wall...\n"
+        , verse next
+        ]
     where next = curr - 1
 
 form :: Int -> String

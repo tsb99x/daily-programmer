@@ -12,60 +12,48 @@
 
 -}
 
-import System.Exit (die)
 import System.IO (hFlush, stdout)
 import Text.Read (readMaybe)
 import System.Random (getStdGen, randomRs, StdGen)
 import Data.List (unfoldr)
+import Control.Monad ((<$!>))
 
 main :: IO ()
-main =
-    input >>= generate >>= output
+main = output . generate =<< input
+    where output = mapM_ putStrLn
 
-input :: IO (Int, Int)
+input :: IO (StdGen, Int, Int)
 input = do
-    count <- getInt "passwords count" mustBePositive
-    length <- getInt "length of a password" mustBePositive
-    return (count, length)
+    gen <- getStdGen
+    count <- readInt mustBePositive <$!> prompt "passwords count"
+    length <- readInt mustBePositive <$!> prompt "length of a password"
+    return (gen, count, length)
 
-generate :: (Int, Int) -> IO [String]
-generate (count, len) = do
-    generator <- getStdGen
-    return $ takePasses generator count len
+generate :: (StdGen, Int, Int) -> [String]
+generate (gen, count, len) = takePasses gen count len
 
 takePasses :: StdGen -> Int -> Int -> [String]
-takePasses generator count len =
-    let
-        symbols = ['_', '@', '-', '+', '=', '$', '#']
-        alphaNumeric = ['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9']
-        alphabet = alphaNumeric ++ symbols
-        sequence = randomRs (0, length alphabet - 1) generator
-        chars = map (alphabet !!) sequence
-    in
-        take count $ chunk len chars
-
-chunk :: Int -> [Char] -> [[Char]]
-chunk len =
-    unfoldr $ Just . splitAt len
-
-output :: [String] -> IO ()
-output =
-    mapM_ putStrLn
+takePasses gen count len = take count $ chunk len chars
+    where chunk len = unfoldr $ Just . splitAt len
+          chars = map (alphabet !!) sequence
+          sequence = randomRs (0, length alphabet - 1) gen
+          alphabet = alpha ++ numeric ++ symbols
+          alpha = ['a'..'z'] ++ ['A'..'Z']
+          numeric = ['0'..'9']
+          symbols = ['_', '@', '-', '+', '=', '$', '#']
 
 -- UTILS
 
-getInt :: String -> (Int -> IO Int) -> IO Int
-getInt msg validator = do
-    line <- prompt msg
-    case readMaybe line of
+readInt :: (Int -> Int) -> String -> Int
+readInt validator str =
+    case readMaybe str of
         Just x -> validator x
-        Nothing -> die "only int values are allowed"
+        Nothing -> error "only int values are allowed"
 
-mustBePositive :: Int -> IO Int
-mustBePositive val =
-    if val <= 0
-        then die "only positive integers allowed"
-        else return val
+mustBePositive :: Int -> Int
+mustBePositive val
+    | val <= 0 = error "only positive integers allowed"
+    | otherwise = val
 
 prompt :: String -> IO String
 prompt msg = do

@@ -11,34 +11,27 @@
 -}
 
 import Data.List (unfoldr)
-import Data.Function ((&))
 
 main :: IO ()
-main = do
-    putStrLn $ piDigits 30
+main = putStrLn $ piDigits 30
 
 piDigits :: Int -> String
-piDigits n =
-    replicate len 2
-    & unfoldr (Just . digit)
-    & take n
-    & concatMap show
-    & tail
-    & ("3," ++)
+piDigits n = putComma . convert . feedDigits $ initialize
     where len = (10 * n) `div` 3
+          feedDigits = take n . unfoldr (Just . digit)
+          initialize = replicate len 2
+          convert = concatMap show
+          putComma = ("3," ++) . tail
 
 digit :: [Int] -> (Int, [Int])
-digit rems = rems
-    & map (*10)
-    & zip [0..]
-    & foldr calc (0, [])
+digit = weave . index . multiply
+    where index = zip [0..]
+          multiply = map (*10)
+          weave = foldr calc (0, [])
 
 calc :: (Int, Int) -> (Int, [Int]) -> (Int, [Int])
-calc (i, x) (carry, rems) =
-    let
-        val = x + carry * (i + 1)
-        den = if i == 0 then 10 else (2 * i) + 1
-        rem = val `mod` den
-        quo = val `div` den
-    in
-        (quo, rem:rems)
+calc (i, x) (carry, rems) = (quo, rem:rems)
+    where val = x + carry * (i + 1)
+          den = if i == 0 then 10 else (2 * i) + 1
+          rem = val `mod` den
+          quo = val `div` den

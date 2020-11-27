@@ -14,4 +14,4 @@ import System.Environment (getArgs)
 import Data.List (sort)
 
 main :: IO ()
-main = getArgs >>= mapM_ putStrLn . sort
+main =  mapM_ putStrLn . sort =<< getArgs

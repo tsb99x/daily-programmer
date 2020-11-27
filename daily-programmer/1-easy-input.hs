@@ -16,34 +16,29 @@
 import System.IO (hFlush, stdout)
 
 main :: IO()
-main =
-    input >>= formMsg >>= output
+main = output . formMsg =<< input
+    where output str = mapM_ ($ str) [putStr, appendFile "tmp/log.txt"]
 
 input :: IO (String, String, String)
 input = do
-    name <- prompt "input your name"
-    age <- prompt "input your age"
-    username <- prompt "input your username"
+    name <- prompt "your name"
+    age <- prompt "your age"
+    username <- prompt "your username"
     return (name, age, username)
 
-formMsg :: (String, String, String) -> IO String
+formMsg :: (String, String, String) -> String
 formMsg (name, age, username) =
-    return $ concat
+    concat
         [ "your name is ", name, ", "
         , "you are ", age, " years old, "
         , "and your username is ", username
         , "\n"
         ]
 
-output :: String -> IO ()
-output msg = do
-    putStr msg
-    appendFile "tmp/log.txt" msg
-
 -- UTILS
 
 prompt :: String -> IO String
 prompt msg = do
-    putStr $ msg ++ " > "
+    putStr $ "input " ++ msg ++ " > "
     hFlush stdout
     getLine

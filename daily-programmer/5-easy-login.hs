@@ -15,13 +15,11 @@
 import System.IO (hFlush, stdout)
 
 main :: IO ()
-main =
-    readCreds >>= authenticate >>= output
+main = output =<< authenticate =<< readCreds
+    where output login = putStrLn $ "successfully logged in as " ++ login
 
 readCreds :: IO [(String, String)]
-readCreds = do
-    content <- readFile "res/passwords.txt"
-    return $ map (toCred . words) $ lines content
+readCreds = map (toCred . words) . lines <$> readFile "res/passwords.txt"
 
 toCred :: [String] -> (String, String)
 toCred [login, pass] = (login, pass)
@@ -36,10 +34,6 @@ authenticate creds = do
         else do
             putStrLn "wrong login and password combination, try again\n"
             authenticate creds
-
-output :: String -> IO ()
-output login =
-    putStrLn $ "successfully logged in as " ++ login
 
 prompt :: String -> IO String
 prompt msg = do

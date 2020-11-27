@@ -17,25 +17,24 @@
 
 import Data.Char (toLower)
 import Text.Read (readMaybe)
-import System.Exit (die)
+import Control.Monad ((<$!>))
 import System.IO (hFlush, stdout)
 
 data Var = F | M | A
 
 main :: IO ()
-main =
-    getMode >>= getVars >>= calculate >>= output
+main = output . calculate =<< getVars =<< getMode
+    where output = putStrLn . convert
 
 getMode :: IO Var
-getMode = do
-    mode <- prompt "select mode [f]orce, [m]ass or [a]cceleration"
-    mapMode (map toLower mode)
+getMode = readMode . map toLower <$> promptMode
+    where promptMode = prompt "mode [f]orce, [m]ass or [a]cceleration"
 
-mapMode :: String -> IO Var
-mapMode "f" = return F
-mapMode "m" = return M
-mapMode "a" = return A
-mapMode _ = die "use 'f', 'm' or 'a' to select mode"
+readMode :: String -> Var
+readMode "f" = F
+readMode "m" = M
+readMode "a" = A
+readMode _ = error "use 'f', 'm' or 'a' to select mode"
 
 getVars :: Var -> IO (Var, Float, Var, Float)
 getVars F = packParams M A
@@ -49,31 +48,30 @@ packParams a b = do
     return (a, aVal, b, bVal)
 
 getVar :: Var -> IO Float
-getVar F = getFloat "input force"
-getVar M = getFloat "input mass"
-getVar A = getFloat "input acceleration"
+getVar F = readFloat <$!> prompt "force"
+getVar M = readFloat <$!> prompt "mass"
+getVar A = readFloat <$!> prompt "acceleration"
 
-calculate :: (Var, Float, Var, Float) -> IO (Var, Float)
-calculate (M, m, A, a) = return (F, m * a)
-calculate (F, f, A, a) = return (M, f / a)
-calculate (F, f, M, m) = return (A, f / m)
+calculate :: (Var, Float, Var, Float) -> (Var, Float)
+calculate (M, m, A, a) = (F, m * a)
+calculate (F, f, A, a) = (M, f / a)
+calculate (F, f, M, m) = (A, f / m)
 
-output :: (Var, Float) -> IO ()
-output (F, f) = putStrLn $ "F = " ++ show f
-output (M, m) = putStrLn $ "M = " ++ show m
-output (A, a) = putStrLn $ "A = " ++ show a
+convert :: (Var, Float) -> String
+convert (F, f) = "F = " ++ show f
+convert (M, m) = "M = " ++ show m
+convert (A, a) = "A = " ++ show a
 
 -- UTILS
 
-getFloat :: String -> IO Float
-getFloat msg = do
-    line <- prompt msg
-    case readMaybe line of
-        Just x -> return x
-        Nothing -> die "only float values are allowed"
+readFloat :: String -> Float
+readFloat str =
+    case readMaybe str of
+        Just x -> x
+        Nothing -> error "only float values are allowed"
 
 prompt :: String -> IO String
 prompt msg = do
-    putStr $ msg ++ " > "
+    putStr $ "input " ++ msg ++ " > "
     hFlush stdout
     getLine

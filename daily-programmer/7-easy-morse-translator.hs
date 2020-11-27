@@ -43,27 +43,21 @@ main = do
         "HELLO DAILY PROGRAMMER GOOD LUCK ON THE CHALLENGES TODAY"
 
 decode :: Text -> Text
-decode msg =
-    T.pack $ unwords $ map (map decodeChar . toChars) $ toWords msg
-    where
-        toWords = T.splitOn " / "
-        toChars = T.splitOn " "
+decode msg = T.pack . unwords . map (map decodeChar . toChars) $ toWords msg
+    where toWords = T.splitOn " / "
+          toChars = T.splitOn " "
 
 decodeChar :: Text -> Char
-decodeChar morseChar =
-    fromJust $ Map.lookup morseChar decoder
+decodeChar morseChar = fromJust $ Map.lookup morseChar decoder
     where decoder = Map.fromList $ map swap morse
 
 encode :: Text -> Text
-encode msg =
-    toSentence $ map (toWords . map encodeChar . T.unpack) $ T.words msg
-    where
-        toSentence = T.intercalate " / "
-        toWords = T.intercalate " "
+encode = toSentence . map (toWords . map encodeChar . T.unpack) . T.words
+    where toSentence = T.intercalate " / "
+          toWords = T.intercalate " "
 
 encodeChar :: Char -> Text
-encodeChar char =
-    fromJust $ Map.lookup char encoder
+encodeChar char = fromJust $ Map.lookup char encoder
     where encoder = Map.fromList morse
 
 morse :: [(Char, Text)]
