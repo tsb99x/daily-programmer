@@ -1,5 +1,3 @@
-/.idea
 /.vscode
-/build
+/**/bin
 /**/tmp
-/venv
