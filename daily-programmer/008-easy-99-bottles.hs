@@ -11,7 +11,7 @@
 -}
 
 main :: IO ()
-main = putStr $ verse 99
+main = putStr $ concatMap verse [99,98..0]
 
 verse :: Int -> String
 verse 0 =
@@ -24,7 +24,6 @@ verse curr =
         [ form curr, " of beer on the wall, "
         , form curr, " of beer.\nTake one down, pass it around, "
         , form next, " of beer on the wall...\n"
-        , verse next
         ]
     where next = curr - 1
 
