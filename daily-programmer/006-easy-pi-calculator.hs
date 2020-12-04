@@ -15,6 +15,8 @@ import Data.List (unfoldr)
 main :: IO ()
 main = putStrLn $ piDigits 30
 
+{- This is an implementation of the Pi Spigot Algorithm -}
+
 piDigits :: Int -> String
 piDigits n = putComma . convert . feedDigits $ initialize
     where len = (10 * n) `div` 3
