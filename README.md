@@ -8,6 +8,7 @@ This includes link to original excercise page.
 ## What are the Rules?
 
 - No build system should be used, except for compiler
+- No package manager is allowed, e.g. no use of a non-standard modules
 - There should be only one file per solution
 - Only one utility file is allowed per language
 
@@ -23,12 +24,12 @@ For `.hs` files:
 For `.c` files:
 
     sudo apt install gcc
-    gcc 1-easy-input.c -o bin/1-easy-input && bin/1-easy-input
+    gcc 1-easy-input.c -o bin/a && bin/a
 
 For `.cpp` files:
 
     sudo apt install gcc
-    g++ 1-hard-guessing-game-reverse.cpp -std=c++17 -o bin/1-hard-guessing-game-reverse && bin/1-hard-guessing-game-reverse
+    g++ 1-hard-guessing-game-reverse.cpp -std=c++17 -o bin/a && bin/a
 
 For `.py` files:
 
