@@ -31,22 +31,16 @@ data LeapYear = Common | Leap
 
 main :: IO ()
 main = void . runTestTT $ test
-    [ (20, Leap )  ~=? centuryAndLeapYear 1996
+    [ (20, Leap)   ~=? centuryAndLeapYear 1996
     , (19, Common) ~=? centuryAndLeapYear 1900
     ]
 
 centuryAndLeapYear :: Int -> (Int, LeapYear)
-centuryAndLeapYear year = (century year, leapYear year)
+centuryAndLeapYear y = (century, isLeapYear y)
+    where century = fullCent + signum yearsInNextCent
+          (fullCent, yearsInNextCent) = divMod y 100
 
-century :: Int -> Int
-century year = fullCenturies + intoNextCentury
-    where fullCenturies   = year `div` 100
-          intoNextCentury | year `mod` 100 /= 0 = 1
-                          | otherwise           = 0
-
-leapYear :: Int -> LeapYear
-leapYear year
-    | year `mod`   4 /= 0 = Common
-    | year `mod` 100 /= 0 = Leap
-    | year `mod` 400 /= 0 = Common
-    | otherwise = Leap
+isLeapYear :: Int -> LeapYear
+isLeapYear y = if y `mod` 4 == 0 && (y `mod` 100 /= 0 || y `mod` 400 == 0)
+    then Leap
+    else Common
