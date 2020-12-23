@@ -12,31 +12,32 @@
 
 -}
 
-import System.IO (hFlush, stdout)
+import Utils (input)
+import Text.Read (readMaybe)
+
+data Credential = Credential
+    { login :: String
+    , password :: String
+    } deriving (Eq, Read)
 
 main :: IO ()
 main = output =<< authenticate =<< readCreds
-    where output login = putStrLn $ "successfully logged in as " ++ login
+    where readCreds = map readCred . lines <$> readFile "res/passwords.txt"
+          output = putStrLn . ("successfully logged in as " ++)
 
-readCreds :: IO [(String, String)]
-readCreds = map (toCred . words) . lines <$> readFile "res/passwords.txt"
-
-toCred :: [String] -> (String, String)
-toCred [login, pass] = (login, pass)
-toCred _ = error "passwords file is malformed"
-
-authenticate :: [(String, String)] -> IO String
+authenticate :: [Credential] -> IO String
 authenticate creds = do
-    login <- prompt "login"
-    pass <- prompt "pass"
-    if (login, pass) `elem` creds
+    login <- input "login > "
+    pass  <- input "pass > "
+    if Credential login pass `elem` creds
         then return login
         else do
             putStrLn "wrong login and password combination, try again\n"
             authenticate creds
 
-prompt :: String -> IO String
-prompt msg = do
-    putStr $ "input " ++ msg ++ " > "
-    hFlush stdout
-    getLine
+-- UTILS
+
+readCred :: String -> Credential
+readCred s = case readMaybe s of
+    Just x -> x
+    Nothing -> error "passwords file is malformed"
