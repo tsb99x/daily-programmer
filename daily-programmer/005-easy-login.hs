@@ -12,13 +12,17 @@
 
 -}
 
+{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
+
 import Utils (input)
 import Text.Read (readMaybe)
+import Control.DeepSeq (NFData, deepseq)
+import GHC.Generics (Generic)
 
 data Credential = Credential
     { login :: String
     , password :: String
-    } deriving (Eq, Read)
+    } deriving (Eq, Read, Generic, NFData)
 
 main :: IO ()
 main = output =<< authenticate =<< readCreds
@@ -26,7 +30,7 @@ main = output =<< authenticate =<< readCreds
           output = putStrLn . ("successfully logged in as " ++)
 
 authenticate :: [Credential] -> IO String
-authenticate creds = do
+authenticate creds = creds `deepseq` do
     login <- input "login > "
     pass  <- input "pass > "
     if Credential login pass `elem` creds
