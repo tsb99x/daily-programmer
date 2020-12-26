@@ -39,8 +39,8 @@ main = void . runTestTT $ test
     ]
 
 extractConsDup :: String -> (String, String)
-extractConsDup s = foldr separateDup ("", "") s
+extractConsDup = foldr separateDup ("", "")
 
 separateDup :: Char -> (String, String) -> (String, String)
-separateDup c ((x:xs), ys) | c == x = (x:xs, c:ys)
-separateDup c (   xs , ys)          = (c:xs,   ys)
+separateDup c (x:xs, ys) | c == x = (x:xs, c:ys)
+separateDup c (  xs, ys)          = (c:xs,   ys)
