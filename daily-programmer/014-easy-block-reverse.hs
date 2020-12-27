@@ -15,19 +15,17 @@
 import System.Environment (getArgs)
 import Data.List (unfoldr)
 import Text.Read (readMaybe)
+import Data.Maybe (fromMaybe)
 
 main :: IO ()
 main = do
-    (a:as) <- getArgs
-    output $ process (readInt a) as
+    (chunkSize:as) <- getArgs
+    output $ reverseChunks (readInt chunkSize) as
     where output = putStrLn . unwords
 
-process :: Int -> [String] -> [String]
-process size xs = concatMap reverse $ chunk xs
+reverseChunks :: Int -> [String] -> [String]
+reverseChunks size = concatMap reverse . chunk
     where chunk = takeWhile (not . null) . unfoldr (Just . splitAt size)
 
 readInt :: String -> Int
-readInt str =
-    case readMaybe str of
-        Just x -> x
-        Nothing -> error "only int values are allowed"
+readInt = fromMaybe (error "only int values are allowed") . readMaybe
