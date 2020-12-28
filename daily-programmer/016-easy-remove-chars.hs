@@ -22,8 +22,8 @@ import Control.Monad (void)
 
 main :: IO ()
 main = void . runTestTT $ test
-    [ "DlyPrgrmmr" ~=? removeChars "Daily Programmer" "aeiou "
+    [ "DlyPrgrmmr" ~=? removeChars "aeiou " "Daily Programmer"
     ]
 
 removeChars :: String -> String -> String
-removeChars str toDel = filter (`notElem` toDel) str
+removeChars toDel = filter (`notElem` toDel)
