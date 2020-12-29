@@ -14,6 +14,8 @@
 import Control.Monad (void)
 import Test.HUnit ((~=?), runTestTT, Testable(test))
 
+type Participant = (String, Int)
+
 main :: IO ()
 main = void . runTestTT $ test
     [ Nothing       ~=? findWinner []
@@ -22,22 +24,12 @@ main = void . runTestTT $ test
     , Just ("B", 5) ~=? findWinner [("A", 2), ("B", 5), ("C", 2)]
     ]
 
-type Participant = (String, Int)
-
 findWinner :: [Participant] -> Maybe Participant
-findWinner ps = headMaybe . filter moreThanMajority . onlyBest $ ps
-    where totalVotes = sum . map snd $ ps
-          majority = totalVotes `div` 2 + 1
-          moreThanMajority = (>= majority) . snd
-          onlyBest = foldr maxVotes []
+findWinner ps = headMaybe $ filter moreThanMajority ps
+    where moreThanMajority = (>= majority votes) . snd
+          majority = (+ 1) . (`div` 2)
+          votes = sum . map snd $ ps
 
 headMaybe :: [a] -> Maybe a
 headMaybe (x:_) = Just x
 headMaybe []    = Nothing
-
-maxVotes :: Participant -> [Participant] -> [Participant]
-maxVotes x [] = [x]
-maxVotes x@(_, xRes) acc@((_, accRes):_)
-    | xRes > accRes  = [x]
-    | xRes == accRes = x:acc
-    | otherwise      = acc
