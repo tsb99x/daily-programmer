@@ -29,7 +29,7 @@ main = void . runTestTT $ test
     ]
 
 findDup :: [Int] -> [Int]
-findDup = sort . values . notUniq . count
+findDup = values . notUniq . count
     where values = map fst
           notUniq = filter ((> 1) . snd)
           count = M.toList . M.fromListWith (+) . (`zip` repeat 1)
