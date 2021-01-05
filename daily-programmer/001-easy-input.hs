@@ -13,23 +13,20 @@
 
 -}
 
-import Utils (input)
+import Text.Printf
+
+import Utils
 
 main :: IO ()
-main = output . formMsg =<< getInput
+main = getInput >>= output
     where output str = mapM_ ($ str) [putStr, appendFile "tmp/log.txt"]
 
-getInput :: IO (String, String, String)
-getInput = do
-    name     <- input "your name > "
-    age      <- input "your age > "
-    username <- input "your username > "
-    return (name, age, username)
+getInput :: IO String
+getInput = formMsg <$> input "your username > "
+                   <*> input "your age > "
+                   <*> input "your username > "
 
-formMsg :: (String, String, String) -> String
-formMsg (name, age, username) = concat
-    [ "your name is ", name, ", "
-    , "you are ", age, " years old, "
-    , "and your username is ", username
-    , "\n"
-    ]
+formMsg :: String -> String -> String -> String
+formMsg = printf "your name is %s, \
+                 \you are %s years old, \
+                 \and your username is %s\n"
