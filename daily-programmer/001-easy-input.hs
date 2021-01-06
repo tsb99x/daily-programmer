@@ -19,10 +19,10 @@ import Utils
 
 main :: IO ()
 main = getInput >>= output
-    where output str = mapM_ ($ str) [putStr, appendFile "tmp/log.txt"]
+    where output s = putStr s >> appendFile "tmp/log.txt" s
 
 getInput :: IO String
-getInput = formMsg <$> input "your username > "
+getInput = formMsg <$> input "your name > "
                    <*> input "your age > "
                    <*> input "your username > "
 
