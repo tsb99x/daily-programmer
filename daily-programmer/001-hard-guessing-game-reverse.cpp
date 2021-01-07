@@ -10,50 +10,50 @@
 
 */
 
-#include "utils/utils.hpp"
+#include "utils.hpp"
 
 using namespace std;
-using namespace utils;
+
+enum answer {
+    LOWER,
+    HIGHER,
+    IT,
+};
+
+answer ask_if_guess_is_correct(
+    const int guess
+) {
+    while (true) {
+        string in = input("your number is " + to_string(guess) + "? > ");
+        if (in == "l") return LOWER;
+        if (in == "h") return HIGHER;
+        if (in == "i") return IT;
+        cout << "invalid input, please select one of [l], [h] or [i]" << endl;
+    }
+}
 
 int main()
 {
-    cout << "You may pick a number in [0, 100]" << newl
-         << "Input [l] for lower, [h] for higher, [i] for it" << endl;
+    cout << "you may pick a number in [0, 100]\n"
+            "input [l] for lower, [h] for higher, [i] for it" << endl;
 
     int range_min = 0;
     int range_max = 100;
 
     for (int iter = 1;; iter++) {
-        if (range_min == range_max) {
-            cerr << "Cheater! You re-picked number in the middle of game"
-                 << endl;
-            exit(EXIT_FAILURE);
+        int guess = (range_min + range_max) / 2;
+        answer ans = ask_if_guess_is_correct(guess);
+
+        if (ans == LOWER) range_max = guess;
+        if (ans == HIGHER) range_min = guess;
+        if (ans == IT) {
+            cout << "PC won in " << iter << " iterations" << endl;
+            return EXIT_SUCCESS;
         }
 
-        int guess = (range_min + range_max) / 2;
-
-        while (true) {
-            cout << "Your number is " << guess << "? ";
-            // TODO : Prompt is LOST (!)
-            string in = prompt("> ");
-
-            if (in == "l") {
-                range_max = guess;
-                break;
-            }
-
-            if (in == "h") {
-                range_min = guess;
-                break;
-            }
-
-            if (in == "i") {
-                cout << "PC won in " << iter << " iterations" << endl;
-                exit(EXIT_SUCCESS);
-            }
-
-            cout << "Invalid input, please select one of [l], [h] or [i]"
-                 << endl;
+        if (range_min == range_max) {
+            cout << "cheater! you re-picked the number in the middle of the game" << endl;
+            return EXIT_FAILURE;
         }
     }
 }
