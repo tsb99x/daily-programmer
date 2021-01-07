@@ -19,24 +19,24 @@ To launch a solution:
 For `.hs` files:
 
     sudo apt install haskell-platform
-    runghc 1-easy-input.hs
+    runghc 001-easy-input.hs
 
 For `.c` files:
 
     sudo apt install gcc
-    gcc 1-easy-input.c -o bin/a && bin/a
+    gcc 001-easy-input.c -o bin/a && bin/a
 
 For `.cpp` files:
 
     sudo apt install gcc
-    g++ 1-hard-guessing-game-reverse.cpp -std=c++17 -o bin/a && bin/a
+    g++ 001-hard-guessing-game-reverse.cpp -std=c++17 -o bin/a && bin/a
 
 For `.py` files:
 
     sudo apt install python3
-    python3 1-easy-input.py
+    python3 001-easy-input.py
 
 For `.java` files:
 
     sudo apt install openjdk-14-jdk
-    java ./1-hard-guessing-game-reverse.java
+    java ./001-hard-guessing-game-reverse.java
