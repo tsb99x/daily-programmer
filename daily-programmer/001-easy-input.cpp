@@ -19,7 +19,8 @@
 
 using namespace std;
 
-int main() {
+int main()
+{
     string name     = input("your name > ");
     string years    = input("your age > ");
     string username = input("your username > ");
