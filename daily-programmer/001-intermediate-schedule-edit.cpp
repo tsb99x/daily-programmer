@@ -12,184 +12,121 @@
 
 */
 
-#include "utils/utils.hpp"
+#include "utils.hpp"
 
-#include <string>
-#include <vector>
-#include <functional>
+#include <algorithm>
 
 using namespace std;
-using namespace utils;
-
-#define UNUSED(x) (void)(x)
 
 struct event {
     int hour;
-    std::string name;
+    string name;
 };
 
-struct command {
-    int argc;
-    std::function<std::string(std::vector<event> &events,
-                              const std::vector<std::string> &args)> fn;
-};
-
-std::string fn_help(std::vector<event> &events,
-                    const std::vector<std::string> &args);
-
-std::string fn_list(std::vector<event> &events,
-                    const std::vector<std::string> &args);
-
-std::string fn_create(std::vector<event> &events,
-                      const std::vector<std::string> &args);
-
-std::string fn_update(std::vector<event> &events,
-                      const std::vector<std::string> &args);
-
-std::string fn_delete(std::vector<event> &events,
-                      const std::vector<std::string> &args);
-
-std::string fn_exit(std::vector<event> &events,
-                    const std::vector<std::string> &args);
-
-vector<string> split(const string &orig,
-                     const char sep)
+void cmd_help()
 {
-    vector<string> res;
-
-    stringstream ss(orig);
-    string tok;
-    while (getline(ss, tok, sep))
-        res.push_back(tok);
-
-    return res;
+    cout << "command list:\n"
+            "\t- exit                 -- quit application"
+            "\t- help                 -- output current message\n"
+            "\t- list                 -- ordered list of all events\n"
+            "\t- create {HOUR} {NAME} -- add new event\n"
+            "\t- update {INDEX}       -- edit specific event\n"
+            "\t- delete {INDEX}       -- remove specific event" << endl;
 }
 
-int main()
-{
-    vector<event> events;
+void cmd_list(
+    const vector<event> &events
+) {
+    if (events.empty())
+        cout << "no events added yet" << endl;
 
-    unordered_map<string, command> commands{
-            {"help",   {0, fn_help}},
-            {"list",   {0, fn_list}},
-            {"create", {2, fn_create}},
-            {"update", {1, fn_update}},
-            {"delete", {1, fn_delete}},
-            {"exit",   {0, fn_exit}}
-    };
-
-    while (true) {
-        // TODO : Prompt is LOST (!)
-        string raw = prompt("> ");
-        vector<string> tokens = split(raw, ' ');
-
-        if (tokens.empty())
-            continue;
-
-        auto res = commands.find(tokens[0]);
-        if (res == commands.end()) {
-            cout << "failed to find command '" << tokens[0] << "'" << endl;
-            continue;
-        }
-
-        if (static_cast<size_t>(res->second.argc + 1) != tokens.size()) {
-            cout << "command '" << tokens[0]
-                 << "' require " << res->second.argc << " arg(s)" << endl;
-            continue;
-        }
-
-        cout << res->second.fn(events, tokens) << endl;
-    }
+    int idx = 0;
+    for (auto &it : events)
+        cout << "\t[" << idx++ << "]: "
+                "hour = " << it.hour << ", "
+                "name = " << it.name << endl;
 }
 
-string fn_help(vector<event> &events,
-               const vector<string> &args)
-{
-    UNUSED(events);
-    UNUSED(args);
-
-    ostringstream ss;
-
-    ss << "command list: " << newl
-       << tab << "- help             -- output current message" << newl
-       << tab << "- list             -- ordered list of all events" << newl
-       << tab << "- create HOUR NAME -- add new event" << newl
-       << tab << "- update INDEX     -- edit specific event" << newl
-       << tab << "- delete INDEX     -- remove specific event" << newl
-       << tab << "- exit             -- quit application";
-
-    return ss.str();
-}
-
-bool comparator(const event &a,
-                const event &b)
-{
+bool comparator(
+    const event &a,
+    const event &b
+) {
     return a.hour < b.hour;
 }
 
-string fn_list(vector<event> &events,
-               const vector<string> &args)
-{
-    UNUSED(args);
+void cmd_create(
+    vector<event> &events,
+    const vector<string> &args
+) {
+    if (args.size() < 3) {
+        cout << "[!] create command format is: create {HOUR} {NAME}" << endl;
+        return;
+    }
 
-    if (events.empty())
-        return "no events added yet";
-
-    ostringstream ss;
-    for (size_t i = 0; i < events.size(); i++)
-        ss << "[" << i << "]: hour = " << events[i].hour
-           << ", name = " << events[i].name;
-
-    return ss.str();
-}
-
-string fn_create(vector<event> &events,
-                 const vector<string> &args)
-{
-    auto opt_hour = convert<int>(args[1]);
-    if (!opt_hour.has_value())
-        return "hour argument must be an int";
+    auto opt_hour = read_opt<int>(args[1]);
+    if (!opt_hour.has_value()) {
+        cout << "[!] hour argument must be an int" << endl;
+        return;
+    }
     int hour = opt_hour.value();
 
-    if (hour < 0 || hour > 23)
-        return "hour argument must be in [0, 23], but was "s + to_string(hour);
+    if (hour < 0 || hour > 23) {
+        cout << "[!] hour argument must be in [0, 23], but was "
+             << to_string(hour) << endl;
+        return;
+    }
 
-    events.push_back({hour, args[2]});
+    events.push_back({ hour, args[2] });
     sort(begin(events), end(events), comparator);
-    return "event was successfully added";
+    cout << "event was successfully added" << endl;
 }
 
-string fn_update(vector<event> &events,
-                 const vector<string> &args)
-{
-    auto opt_idx = convert<int>(args[1]);
-    if (!opt_idx.has_value())
-        return "idx argument must be an int";
+void cmd_update(
+    vector<event> &events,
+    const vector<string> &args
+) {
+    if (args.size() < 2) {
+        cout << "[!] update command format is: update {INDEX}" << endl;
+        return;
+    }
+
+    auto opt_idx = read_opt<int>(args[1]);
+    if (!opt_idx.has_value()) {
+        cout << "[!] idx argument must be an int" << endl;
+        return;
+    }
     int idx = opt_idx.value();
 
-    if (idx < 0)
-        return "idx argument must be greater or equal to 0";
+    if (idx < 0) {
+        cout << "[!] idx argument must be greater or equal to 0" << endl;
+        return;
+    }
 
-    if (static_cast<size_t>(idx) >= events.size())
-        return "idx of "s + to_string(idx) + " does not exist";
+    if (static_cast<size_t>(idx) >= events.size()) {
+        cout << "[!] idx of " << idx << " does not exist" << endl;
+        return;
+    }
 
     event evt = events[idx];
 
-    string hour_str = prompt("input hour ("s + to_string(evt.hour) + ") > ");
+    string hour_str = input("input hour (" + to_string(evt.hour) + ") > ");
     if (!hour_str.empty()) {
-        auto opt_hour = convert<int>(args[1]);
-        if (!opt_hour.has_value())
-            return "hour argument must be an int";
+        auto opt_hour = read_opt<int>(hour_str);
+        if (!opt_hour.has_value()) {
+            cout << "[!] hour argument must be an int" << endl;
+            return;
+        }
         int hour = opt_hour.value();
 
-        if (hour < 0 || hour > 23)
-            return "hour argument must be in [0, 23], but was "s +
-                   to_string(hour);
+        if (hour < 0 || hour > 23) {
+            cout << "hour argument must be in [0, 23], but was " << hour << endl;
+            return;
+        }
 
         evt.hour = hour;
     }
 
-    string name = prompt("input name ("s + evt.name + ") > ");
+    string name = input("input name (" + evt.name + ") > ");
     if (!name.empty())
         evt.name = name;
 
@@ -197,31 +134,55 @@ string fn_update(vector<event> &events,
     events.push_back(evt);
 
     sort(begin(events), end(events), comparator);
-    return "event was successfully updated";
+    cout << "event was successfully updated" << endl;
 }
 
-string fn_delete(vector<event> &events,
-                 const vector<string> &args)
-{
-    auto opt_idx = convert<int>(args[1]);
-    if (!opt_idx.has_value())
-        return "idx argument must be an int";
+void cmd_delete(
+    vector<event> &events,
+    const vector<string> &args
+) {
+    if (args.size() < 2) {
+        cout << "[!] delete command format is: delete {INDEX}" << endl;
+        return;
+    }
+
+    auto opt_idx = read_opt<int>(args[1]);
+    if (!opt_idx.has_value()) {
+        cout << "[!] idx argument must be an int" << endl;
+        return;
+    }
     int idx = opt_idx.value();
 
-    if (idx < 0)
-        return "idx argument must be greater or equal to 0";
+    if (idx < 0) {
+        cout << "[!] idx argument must be greater or equal to 0" << endl;
+        return;
+    }
 
-    if (static_cast<size_t>(idx) >= events.size())
-        return "idx of "s + to_string(idx) + " does not exist";
+    if (static_cast<size_t>(idx) >= events.size()) {
+        cout << "[i] idx of " << idx << " does not exist" << endl;
+        return;
+    }
 
     events.erase(begin(events) + idx);
-    return "event was successfully removed";
+    cout << "event was successfully removed" << endl;
 }
 
-string fn_exit(vector<event> &events,
-               const vector<string> &args)
+int main()
 {
-    UNUSED(events);
-    UNUSED(args);
-    exit(EXIT_SUCCESS);
+    vector<event> events;
+
+    while (true) {
+        string command = input("> ");
+        vector<string> args = split(command, ' ');
+        if (args.empty())
+            continue;
+
+        if      (args[0] == "exit"  ) return EXIT_SUCCESS;
+        else if (args[0] == "help"  ) cmd_help();
+        else if (args[0] == "list"  ) cmd_list(events);
+        else if (args[0] == "create") cmd_create(events, args);
+        else if (args[0] == "delete") cmd_delete(events, args);
+        else if (args[0] == "update") cmd_update(events, args);
+        else cout << "unknown command `" << args[0] << "`" << endl;
+    }
 }
