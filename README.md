@@ -24,12 +24,12 @@ For `.hs` files:
 For `.c` files:
 
     sudo apt install gcc
-    gcc 001-easy-input.c -o bin/a && bin/a
+    gcc 001-easy-input.c -ansi -o /tmp/a.out && /tmp/a.out
 
 For `.cpp` files:
 
     sudo apt install gcc
-    g++ 001-hard-guessing-game-reverse.cpp -std=c++17 -o bin/a && bin/a
+    g++ 001-hard-guessing-game-reverse.cpp -std=c++17 -o /tmp/a.out && /tmp/a.out
 
 For `.py` files:
 
