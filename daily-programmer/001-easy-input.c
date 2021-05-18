@@ -16,7 +16,21 @@
 #include <stdio.h>
 #include <string.h>
 
-#define LENGTH 255
+#define LENGTH 256
+
+void input(
+    const char *prompt,
+    char *dest,
+    size_t dest_size
+) {
+    size_t len;
+
+    fputs(prompt, stdout);
+    fgets(dest, dest_size, stdin);
+    len = strlen(dest);
+    if (len-- && dest[len] == '\n')
+        dest[len] = '\0';
+}
 
 int main(
     void
@@ -25,20 +39,19 @@ int main(
     char name[LENGTH], age[LENGTH], username[LENGTH];
     FILE *log;
 
-    printf("input your name > ");
-    gets(name);
-    printf("input your age > ");
-    gets(age);
-    printf("input your username > ");
-    gets(username);
+    input("input your name > ", name, LENGTH);
+    input("input your age > ", age, LENGTH);
+    input("input your username > ", username, LENGTH);
 
     printf(format, name, age, username);
 
     log = fopen("tmp/log.txt", "a");
     if (!log) {
-        fprintf(stderr, "could not open file log.txt\n");
+        fputs("could not open file log.txt\n", stderr);
         return -1;
     }
     fprintf(log, format, name, age, username);
     fclose(log);
+
+    return 0;
 }
