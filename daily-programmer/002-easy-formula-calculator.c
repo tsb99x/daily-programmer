@@ -15,54 +15,70 @@
 
 */
 
-#include <stdio.h>
-#include <string.h>
+#include "utils.h"
 
-#define LENGTH 255
+#define LENGTH 256
+
+char read_mode(
+    const char *in
+) {
+    if (!strcmp(in, "f"))
+        return 'f';
+    if (!strcmp(in, "m"))
+        return 'm';
+    if (!strcmp(in, "a"))
+        return 'a';
+    return 0;
+}
+
+void read_params(
+    char mode,
+    float *f,
+    float *m,
+    float *a
+) {
+    if (mode == 'm' || mode == 'a') {
+        printf("input value of [f] > ");
+        scanf("%f", f);
+    }
+    if (mode == 'f' || mode == 'a') {
+        printf("input value of [m] > ");
+        scanf("%f", m);
+    }
+    if (mode == 'f' || mode == 'm') {
+        printf("input value of [a] > ");
+        scanf("%f", a);
+    }
+}
+
+float calc(
+    char mode,
+    float f,
+    float m,
+    float a
+) {
+    if (mode == 'f')
+        return m * a;
+    if (mode == 'm')
+        return f / a;
+    if (mode == 'a')
+        return f / m;
+}
 
 int main(
     void
 ) {
-    char mode, input[LENGTH];
+    char mode, in[LENGTH];
     float f, m, a;
 
-    printf("choose input mode [f] = [m] * [a] > ");
-    gets(input);
-
-    if (!strcmp(input, "f")) {
-        mode = 'f';
-    } else if (!strcmp(input, "m")) {
-        mode = 'm';
-    } else if (!strcmp(input, "a")) {
-        mode = 'a';
-    } else {
-        fprintf(stderr, "only [f], [m], or [a] modes are allowed");
+    input("choose input mode [f] = [m] * [a] > ", in, LENGTH);
+    mode = read_mode(in);
+    if (!mode) {
+        fputs("only [f], [m], or [a] modes are allowed", stderr);
         return -1;
     }
-
-    if (mode == 'm' || mode == 'a') {
-        printf("input value of [f] > ");
-        scanf("%f", &f);
-    }
-    if (mode == 'f' || mode == 'a') {
-        printf("input value of [m] > ");
-        scanf("%f", &m);
-    }
-    if (mode == 'f' || mode == 'm') {
-        printf("input value of [a] > ");
-        scanf("%f", &a);
-    }
-
-    if (mode == 'f') {
-        f = m * a;
-        printf("[f] = %f\n", f);
-    } else if (mode == 'm') {
-        m = f / a;
-        printf("[m] = %f\n", m);
-    } else if (mode == 'a') {
-        a = f / m;
-        printf("[a] = %f\n", a);
-    }
+    read_params(mode, &f, &m, &a);
+    printf("[%c] = %f\n", mode, calc(mode, f, m, a));
 
     return 0;
 }
