@@ -9,15 +9,18 @@ int main(
     char name[LENGTH], age[LENGTH], username[LENGTH];
     FILE *log;
 
-    input("your name > ",     name,     LENGTH);
-    input("your age > ",      age,      LENGTH);
-    input("your username > ", username, LENGTH);
+    if (!( input("your name > ",     name,     LENGTH)
+        && input("your age > ",      age,      LENGTH)
+        && input("your username > ", username, LENGTH))) {
+        fputs("failed to acquire input\n", stderr);
+        return -1;
+    }
 
     printf(format, name, age, username);
 
     log = fopen("tmp/log.txt", "a");
     if (!log) {
-        fputs("could not open file log.txt\n", stderr);
+        fputs("failed to open file log.txt\n", stderr);
         return -1;
     }
     fprintf(log, format, name, age, username);

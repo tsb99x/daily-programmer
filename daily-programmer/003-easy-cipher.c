@@ -35,7 +35,11 @@ int main(
 ) {
     char in[BUF_SIZE];
 
-    input("string to encode > ", in, sizeof(in));
+    if (!input("string to encode > ", in, sizeof(in))) {
+        fputs("failed to acquire input\n", stderr);
+        return -1;
+    }
+
     rots(in, 13);
     printf("rot13 is '%s'\n", in);
     rots(in, 13);

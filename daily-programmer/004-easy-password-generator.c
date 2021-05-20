@@ -28,9 +28,10 @@ int read_int(
     char in[1024];
     int res;
 
-    input(prompt, in, sizeof(in));
+    if (!input(prompt, in, sizeof(in)))
+        panic("failed to acquire input");
     if (!convert_s_to_i(in, &res))
-        panic("cannot convert string to integer");
+        panic("failed to convert string to integer");
     return res;
 }
 

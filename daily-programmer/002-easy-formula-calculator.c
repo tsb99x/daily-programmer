@@ -71,12 +71,17 @@ int main(
     char mode, in[LENGTH];
     float f, m, a;
 
-    input("choose input mode [f] = [m] * [a] > ", in, LENGTH);
-    mode = read_mode(in);
-    if (!mode) {
-        fputs("only [f], [m], or [a] modes are allowed", stderr);
+    if (!input("choose input mode [f] = [m] * [a] > ", in, LENGTH)) {
+        fputs("failed to acquire input\n", stderr);
         return -1;
     }
+
+    mode = read_mode(in);
+    if (!mode) {
+        fputs("only [f], [m], or [a] modes are allowed\n", stderr);
+        return -1;
+    }
+
     read_params(mode, &f, &m, &a);
     printf("[%c] = %f\n", mode, calc(mode, f, m, a));
 
