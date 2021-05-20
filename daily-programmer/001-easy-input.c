@@ -9,9 +9,9 @@ int main(
     char name[LENGTH], age[LENGTH], username[LENGTH];
     FILE *log;
 
-    input("input your name > ", name, LENGTH);
-    input("input your age > ", age, LENGTH);
-    input("input your username > ", username, LENGTH);
+    input("your name > ",     name,     LENGTH);
+    input("your age > ",      age,      LENGTH);
+    input("your username > ", username, LENGTH);
 
     printf(format, name, age, username);
 
