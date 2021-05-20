@@ -24,7 +24,7 @@ For `.hs` files:
 For `.c` files:
 
     sudo apt install gcc
-    gcc 001-easy-input.c -ansi -Wall -Werror -o /tmp/a.out && /tmp/a.out
+    gcc 001-easy-input.c -ansi -Wall -Wextra -Werror -o /tmp/a.out && /tmp/a.out
 
 For `.cpp` files:
 
