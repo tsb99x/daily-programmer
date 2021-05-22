@@ -14,24 +14,12 @@ char read_mode(
     return 0;
 }
 
-void read_params(
-    char mode,
-    float *f,
-    float *m,
-    float *a
+void read_param(
+    char param,
+    float *res
 ) {
-    if (mode == 'm' || mode == 'a') {
-        printf("input value of [f] > ");
-        scanf("%f", f);
-    }
-    if (mode == 'f' || mode == 'a') {
-        printf("input value of [m] > ");
-        scanf("%f", m);
-    }
-    if (mode == 'f' || mode == 'm') {
-        printf("input value of [a] > ");
-        scanf("%f", a);
-    }
+    printf("input value of [%c] > ", param);
+    scanf("%f", param);
 }
 
 float calc(
@@ -65,7 +53,13 @@ int main(
         return -1;
     }
 
-    read_params(mode, &f, &m, &a);
+    if (mode == 'm' || mode == 'a')
+        read_param('f', &f);
+    if (mode == 'f' || mode == 'a')
+        read_param('m', &m);
+    if (mode == 'f' || mode == 'm')
+        read_param('a', &a);
+
     printf("[%c] = %f\n", mode, calc(mode, f, m, a));
 
     return 0;
