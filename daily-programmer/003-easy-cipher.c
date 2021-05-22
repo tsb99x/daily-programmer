@@ -2,24 +2,25 @@
 
 #define BUF_SIZE 1024
 
-char rotcb(
-    char c,
-    char base,
-    int shift,
-    int alpha_len
+char get_base(
+    char c
 ) {
-    return base + (c - base + shift) % alpha_len;
+    if (c >= 'a' && c <= 'z')
+        return 'a';
+    if (c >= 'A' && c <= 'Z')
+        return 'A';
+    return c;
 }
 
 char rotc(
     char c,
     int shift
 ) {
-    if (c >= 'a' && c <= 'z')
-        return rotcb(c, 'a', shift, 26);
-    if (c >= 'A' && c <= 'Z')
-        return rotcb(c, 'A', shift, 26);
-    return c;
+    char base = get_base(c);
+
+    if (base == c)
+        return c;
+    return base + (c - base + shift) % 26;
 }
 
 void rots(
