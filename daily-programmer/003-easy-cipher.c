@@ -1,6 +1,6 @@
 #include "utils.h"
 
-#define BUF_SIZE 1024
+#define LENGTH 256
 
 char get_base(
     char c
@@ -34,7 +34,7 @@ void rots(
 int main(
     void
 ) {
-    char in[BUF_SIZE];
+    char in[LENGTH];
 
     if (!input("string to encode > ", in, sizeof(in))) {
         fputs("failed to acquire input\n", stderr);
