@@ -1,8 +1,9 @@
 #include "utils.h"
 
 #include <stdlib.h>
-#include <stdbool.h>
 #include <time.h>
+
+typedef const char *error_t;
 
 const char alpha[] =
     "abcdefghijklmnopqrstuvwxyz"
@@ -10,14 +11,6 @@ const char alpha[] =
     "1234567890"
     ".,-=+@$^&:;";
 const size_t alpha_len = sizeof(alpha) - 1;
-
-void panic(
-    const char *msg
-) {
-    fputs(msg, stderr);
-    fputc('\n', stderr);
-    exit(EXIT_FAILURE);
-}
 
 bool convert_s_to_i(
     const char *s,
@@ -30,31 +23,49 @@ bool convert_s_to_i(
 }
 
 int read_int(
-    const char *prompt
+    const char *prompt,
+    error_t *e
 ) {
     char in[1024];
     int res;
 
-    if (!input(prompt, in, sizeof(in)))
-        panic("failed to acquire input");
-    if (!convert_s_to_i(in, &res))
-        panic("failed to convert string to integer");
+    if (!input(prompt, in, sizeof(in))) {
+        *e = "failed to acquire input";
+        return 0;
+    }
+    if (!convert_s_to_i(in, &res)) {
+        *e = "failed to convert string to integer";
+        return 0;
+    }
     return res;
+}
+
+error_t handle_error(
+    error_t e
+) {
+    if (e)
+        fprintf(stderr, "%s\n", e);
+    return e;
 }
 
 int main(
     void
 ) {
     int i, j, len, cnt;
+    error_t e = NULL;
 
     srand(time(NULL));
 
-    len = read_int("password length > ");
-    cnt = read_int("passwords count > ");
+    len = read_int("password length > ", &e);
+    if (handle_error(e))
+        return -1;
+    cnt = read_int("passwords count > ", &e);
+    if (handle_error(e))
+        return -1;
 
     for (i = 0; i < cnt; i++, putchar('\n'))
         for (j = 0; j < len; j++)
             putchar(alpha[rand() % alpha_len]);
 
-    return EXIT_SUCCESS;
+    return 0;
 }
