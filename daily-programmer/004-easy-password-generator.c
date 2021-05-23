@@ -4,6 +4,13 @@
 #include <stdbool.h>
 #include <time.h>
 
+const char alpha[] =
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "1234567890"
+    ".,-=+@$^&:;";
+const size_t alpha_len = sizeof(alpha) - 1;
+
 void panic(
     const char *msg
 ) {
@@ -38,19 +45,13 @@ int read_int(
 int main(
     void
 ) {
-    int i, j, len, cnt, alpha_len;
-    const char alpha[] =
-        "abcdefghijklmnopqrstuvwxyz"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "1234567890"
-        ".,-=+@$^&:;";
+    int i, j, len, cnt;
 
     srand(time(NULL));
 
     len = read_int("password length > ");
     cnt = read_int("passwords count > ");
 
-    alpha_len = strlen(alpha);
     for (i = 0; i < cnt; i++, putchar('\n'))
         for (j = 0; j < len; j++)
             putchar(alpha[rand() % alpha_len]);

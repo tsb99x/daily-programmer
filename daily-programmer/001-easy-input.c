@@ -2,10 +2,11 @@
 
 #define LENGTH 256
 
+const char format[] = "your name is %s, you are %s years old, and your username is %s\n";
+
 int main(
     void
 ) {
-    const char format[] = "your name is %s, you are %s years old, and your username is %s\n";
     char name[LENGTH], age[LENGTH], username[LENGTH];
     FILE *log;
 
