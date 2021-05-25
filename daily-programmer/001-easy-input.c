@@ -10,9 +10,9 @@ int main(
     char name[LENGTH], age[LENGTH], username[LENGTH];
     FILE *log;
 
-    if (!( input("your name > ",     name,     LENGTH)
-        && input("your age > ",      age,      LENGTH)
-        && input("your username > ", username, LENGTH))) {
+    if (!input("your name > ",     name,     LENGTH)
+    ||  !input("your age > ",      age,      LENGTH)
+    ||  !input("your username > ", username, LENGTH)) {
         fputs("failed to acquire input\n", stderr);
         return -1;
     }
