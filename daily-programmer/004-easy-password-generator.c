@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define OK NULL;
+
 typedef const char *error_t;
 
 const char alpha[] =
@@ -22,22 +24,17 @@ bool convert_s_to_i(
     return p == s + strlen(s);
 }
 
-int read_int(
+error_t read_int(
     const char *prompt,
-    error_t *e
+    int *res
 ) {
     char in[1024];
-    int res;
 
-    if (!input(prompt, in, sizeof(in))) {
-        *e = "failed to acquire input";
-        return 0;
-    }
-    if (!convert_s_to_i(in, &res)) {
-        *e = "failed to convert string to integer";
-        return 0;
-    }
-    return res;
+    if (!input(prompt, in, sizeof(in)))
+        return "failed to acquire input";
+    if (!convert_s_to_i(in, res))
+        return "failed to convert string to integer";
+    return OK;
 }
 
 error_t handle_error(
@@ -52,14 +49,14 @@ int main(
     void
 ) {
     int i, j, len, cnt;
-    error_t e = NULL;
+    error_t e;
 
     srand(time(NULL));
 
-    len = read_int("password length > ", &e);
+    e = read_int("password length > ", &len);
     if (handle_error(e))
         return -1;
-    cnt = read_int("passwords count > ", &e);
+    e = read_int("passwords count > ", &cnt);
     if (handle_error(e))
         return -1;
 
