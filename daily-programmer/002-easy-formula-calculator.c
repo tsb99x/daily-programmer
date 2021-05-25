@@ -14,12 +14,16 @@ char read_mode(
     return 0;
 }
 
-void read_param(
+bool read_param(
     char param,
     float *res
 ) {
     printf("input value of [%c] > ", param);
-    scanf("%f", param);
+    if (scanf("%f", res) != 1) {
+        fputs("failed to parse float input\n", stderr);
+        return false;
+    }
+    return true;
 }
 
 float calc(
@@ -34,6 +38,7 @@ float calc(
         return f / a;
     if (mode == 'a')
         return f / m;
+    return 0;
 }
 
 int main(
@@ -54,11 +59,14 @@ int main(
     }
 
     if (mode == 'm' || mode == 'a')
-        read_param('f', &f);
+        if (!read_param('f', &f))
+            return -1;
     if (mode == 'f' || mode == 'a')
-        read_param('m', &m);
+        if (!read_param('m', &m))
+            return -1;
     if (mode == 'f' || mode == 'm')
-        read_param('a', &a);
+        if (!read_param('a', &a))
+            return -1;
 
     printf("[%c] = %f\n", mode, calc(mode, f, m, a));
 
