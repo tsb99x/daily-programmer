@@ -21,11 +21,16 @@ int main(
 
     log = fopen("tmp/log.txt", "a");
     if (!log) {
-        fputs("failed to open file log.txt\n", stderr);
+        fputs("failed to open log file\n", stderr);
         return -1;
     }
+
     fprintf(log, format, name, age, username);
-    fclose(log);
+
+    if (fclose(log)) {
+        fputs("failed to close log file\n", stderr);
+        return -1;
+    }
 
     return 0;
 }
