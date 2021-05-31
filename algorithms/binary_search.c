@@ -3,9 +3,9 @@
 
 #define ARR_SIZE 1024
 
-int *find_index(
+const int *find_index(
     int val,
-    int *arr,
+    const int *arr,
     size_t arr_size
 ) {
     int lo = 0;
@@ -18,7 +18,7 @@ int *find_index(
             return arr + mi;
         if (arr[mi] > val)
             hi = mi - 1;
-        if (arr[mi] < val)
+        else
             lo = mi + 1;
     }
     return NULL;
@@ -27,11 +27,11 @@ int *find_index(
 int main(
     void
 ) {
-    int arr[] = { 1, 3, 5, 8, 12 };
+    const int arr[] = { 1, 3, 5, 8, 12 };
     size_t arr_size = sizeof(arr) / sizeof(*arr);
-    int *res;
+    int needle = 8;
+    const int *res = find_index(needle, arr, arr_size);
 
-    res = find_index(8, arr, arr_size);
-    printf("%d is %sfound in array\n", 8, !res ? "not " : "");
+    printf("%d is %sfound in array\n", needle, !res ? "not " : "");
     return 0;
 }
