@@ -1,8 +1,6 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#define ARR_SIZE 1024
-
 const int *find_index(
     int val,
     const int *arr,
